@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>Simple Editor</title>
-    <!-- CodeMirror CSSの追加 -->
     <link rel="stylesheet" href="../node_modules/codemirror/lib/codemirror.css">
     <link rel="stylesheet" href="../node_modules/codemirror/theme/monokai.css">
     <style>
@@ -26,6 +25,7 @@
         }
         .CodeMirror {
             height: 100%;
+            font-size: 14px;
         }
         webview {
             width: 100%;
@@ -44,26 +44,72 @@
         </div>
     </div>
 
-    <!-- CodeMirror JavaScriptの追加 -->
+    <!-- CodeMirror本体 -->
     <script src="../node_modules/codemirror/lib/codemirror.js"></script>
+    <!-- 言語モード -->
     <script src="../node_modules/codemirror/mode/javascript/javascript.js"></script>
     <script src="../node_modules/codemirror/mode/xml/xml.js"></script>
     <script src="../node_modules/codemirror/mode/css/css.js"></script>
     <script src="../node_modules/codemirror/mode/htmlmixed/htmlmixed.js"></script>
+    <!-- キーバインド -->
+    <script src="../node_modules/codemirror/keymap/vim.js"></script>
+    <script src="../node_modules/codemirror/keymap/emacs.js"></script>
+    <!-- 追加機能 -->
+    <script src="../node_modules/codemirror/addon/edit/closebrackets.js"></script>
+    <script src="../node_modules/codemirror/addon/edit/closetag.js"></script>
+    <script src="../node_modules/codemirror/addon/edit/matchbrackets.js"></script>
+
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const editor = CodeMirror.fromTextArea(document.getElementById('editor'), {
+        const { ipcRenderer } = require('electron');
+        let editor;
+
+        function initEditor() {
+            const editorElem = document.getElementById('editor');
+            editor = CodeMirror.fromTextArea(editorElem, {
                 mode: 'htmlmixed',
                 theme: 'monokai',
                 lineNumbers: true,
-                autoCloseTags: true,
                 autoCloseBrackets: true,
+                autoCloseTags: true,
                 matchBrackets: true,
                 indentUnit: 4,
                 tabSize: 4,
                 lineWrapping: true,
-                autofocus: true
+                autofocus: true,
+                keyMap: 'default',  // 'default' を使用
+                inputStyle: 'contenteditable',  // これを追加
+                dragDrop: true,  // ドラッグ&ドロップを有効化
+                extraKeys: {
+                    "Tab": "indentMore",
+                    "Shift-Tab": "indentLess"
+                }
             });
+
+            // エディタの準備ができたことをコンソールに出力
+            console.log('Editor initialized');
+
+            // エディタの変更イベントをリッスン
+            editor.on('change', (cm) => {
+                console.log('Editor content changed');
+            });
+        }
+
+        // DOMの読み込みが完了したらエディタを初期化
+        document.addEventListener('DOMContentLoaded', initEditor);
+
+        // キーバインドの変更をリッスン
+        ipcRenderer.on('change-keybinding', (event, keyBinding) => {
+            if (editor) {
+                try {
+                    if (keyBinding === 'normal') {
+                        keyBinding = 'default';  // 'normal' の代わりに 'default' を使用
+                    }
+                    editor.setOption('keyMap', keyBinding);
+                    console.log(`Keymap changed to: ${keyBinding}`);
+                } catch (error) {
+                    console.error('Error changing keymap:', error);
+                }
+            }
         });
     </script>
 </body>

@@ -1,5 +1,6 @@
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, ipcMain } from 'electron';
 import * as path from 'path';
+import { createMenu } from './menu';
 
 function createWindow(): void {
     const win = new BrowserWindow({
@@ -7,14 +8,17 @@ function createWindow(): void {
         height: 800,
         webPreferences: {
             nodeIntegration: true,
-            contextIsolation: false,  // 追加
+            contextIsolation: false,
             webviewTag: true,
-            webSecurity: false  // 開発時のみ。本番環境では true にすることを推奨
+            webSecurity: false
         }
     });
 
     win.loadFile(path.join(__dirname, '../src/index.html'));
+    //win.webContents.openDevTools();  // 開発ツールを開く
+    createMenu(win);
 }
+
 
 app.whenReady().then(() => {
     createWindow();
