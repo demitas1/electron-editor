@@ -1,0 +1,27 @@
+{
+  "name": "electron-editor",
+  "version": "0.1.0",
+  "main": "dist/main.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "npm run build && electron .",
+    "watch": "tsc -w",
+    "dev": "nodemon --watch src --ext ts,html --exec \"npm start\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "description": "",
+  "devDependencies": {
+    "@types/electron": "^1.6.12",
+    "@types/node": "^22.10.2",
+    "electron": "^33.2.1",
+    "nodemon": "^3.1.9",
+    "typescript": "^5.7.2"
+  },
+  "dependencies": {
+    "react": "^16.14.0",
+    "react-dom": "^16.14.0",
+    "react-split-pane": "^0.1.92"
+  }
+}
