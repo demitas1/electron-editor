@@ -1,6 +1,10 @@
-import { app, BrowserWindow, ipcMain } from 'electron';
+import { app, BrowserWindow } from 'electron';
 import * as path from 'path';
 import { createMenu } from './menu';
+import { initialize } from '@electron/remote/main';
+
+// @electron/remote の初期化
+initialize();
 
 function createWindow(): void {
     const win = new BrowserWindow({
@@ -14,11 +18,13 @@ function createWindow(): void {
         }
     });
 
+    // @electron/remote のセットアップ
+    require('@electron/remote/main').enable(win.webContents);
+
     win.loadFile(path.join(__dirname, '../src/index.html'));
-    //win.webContents.openDevTools();  // 開発ツールを開く
+    //win.webContents.openDevTools();
     createMenu(win);
 }
-
 
 app.whenReady().then(() => {
     createWindow();

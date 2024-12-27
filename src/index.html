@@ -67,7 +67,10 @@
 
     <script>
         const { ipcRenderer } = require('electron');
+        const { dialog } = require('@electron/remote');
+        const fs = require('fs');
         let editor;
+        let currentFilePath = null;
 
         function initEditor() {
             const editorElem = document.getElementById('editor');
@@ -97,6 +100,58 @@
             // エディタの変更イベントをリッスン
             editor.on('change', (cm) => {
                 console.log('Editor content changed');
+            });
+
+            // ファイル操作のイベントリスナーを追加
+            setupFileOperations();
+        }
+
+        function setupFileOperations() {
+            // 新規ファイル
+            ipcRenderer.on('file-new', () => {
+                editor.setValue('');
+                currentFilePath = null;
+                document.title = 'Simple Editor - New File';
+            });
+
+            // ファイルを開く
+            ipcRenderer.on('file-opened', (event, { filePath, content }) => {
+                editor.setValue(content);
+                currentFilePath = filePath;
+                document.title = `Simple Editor - ${filePath}`;
+            });
+
+            // 上書き保存
+            ipcRenderer.on('file-save', async () => {
+                if (currentFilePath) {
+                    try {
+                        fs.writeFileSync(currentFilePath, editor.getValue(), 'utf-8');
+                    } catch (err) {
+                        await dialog.showErrorBox('Error', `Failed to save file: ${err.message}`);
+                    }
+                } else {
+                    // ファイルパスが未設定の場合は Save As として扱う
+                    ipcRenderer.send('file-save-as');
+                }
+            });
+
+            // 名前を付けて保存
+            ipcRenderer.on('file-save-as', async () => {
+                const result = await dialog.showSaveDialog({
+                    filters: [
+                        { name: 'All Files', extensions: ['*'] }
+                    ]
+                });
+
+                if (!result.canceled && result.filePath) {
+                    try {
+                        fs.writeFileSync(result.filePath, editor.getValue(), 'utf-8');
+                        currentFilePath = result.filePath;
+                        document.title = `Simple Editor - ${result.filePath}`;
+                    } catch (err) {
+                        await dialog.showErrorBox('Error', `Failed to save file: ${err.message}`);
+                    }
+                }
             });
         }
 
