@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <title>Simple Editor</title>
+    <!-- CodeMirror CSSの追加 -->
+    <link rel="stylesheet" href="../node_modules/codemirror/lib/codemirror.css">
+    <link rel="stylesheet" href="../node_modules/codemirror/theme/monokai.css">
     <style>
         body, html {
             margin: 0;
@@ -21,12 +24,8 @@
             width: 50%;
             height: 100%;
         }
-        textarea {
-            width: 100%;
+        .CodeMirror {
             height: 100%;
-            resize: none;
-            box-sizing: border-box;
-            padding: 10px;
         }
         webview {
             width: 100%;
@@ -44,5 +43,28 @@
             <webview src="http://localhost:3000"></webview>
         </div>
     </div>
+
+    <!-- CodeMirror JavaScriptの追加 -->
+    <script src="../node_modules/codemirror/lib/codemirror.js"></script>
+    <script src="../node_modules/codemirror/mode/javascript/javascript.js"></script>
+    <script src="../node_modules/codemirror/mode/xml/xml.js"></script>
+    <script src="../node_modules/codemirror/mode/css/css.js"></script>
+    <script src="../node_modules/codemirror/mode/htmlmixed/htmlmixed.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const editor = CodeMirror.fromTextArea(document.getElementById('editor'), {
+                mode: 'htmlmixed',
+                theme: 'monokai',
+                lineNumbers: true,
+                autoCloseTags: true,
+                autoCloseBrackets: true,
+                matchBrackets: true,
+                indentUnit: 4,
+                tabSize: 4,
+                lineWrapping: true,
+                autofocus: true
+            });
+        });
+    </script>
 </body>
 </html>

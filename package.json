@@ -20,6 +20,8 @@
     "typescript": "^5.7.2"
   },
   "dependencies": {
+    "@types/codemirror": "^5.60.15",
+    "codemirror": "^5.65.18",
     "react": "^16.14.0",
     "react-dom": "^16.14.0",
     "react-split-pane": "^0.1.92"

@@ -7,7 +7,9 @@ function createWindow(): void {
         height: 800,
         webPreferences: {
             nodeIntegration: true,
-            webviewTag: true  // WebViewを有効化
+            contextIsolation: false,  // 追加
+            webviewTag: true,
+            webSecurity: false  // 開発時のみ。本番環境では true にすることを推奨
         }
     });
 
